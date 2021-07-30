@@ -1,6 +1,7 @@
 ﻿<#
  .Synopsis
   Allows for easy backup and restore of Microsoft EDGE (Anaheim) Profiles.
+  EDGE MUST BE CLOSED DURING!
 
  .Description
   Will backup all EDGE "User Data" for the current user. This data contains all the "Profiles" within the browser, and the corresponding registry keys will also be saved alongside the backup.
@@ -8,37 +9,6 @@
   Before archiving the backup, all profiles have their Cache emptied.
 
   Restore will replace the current users EDGE data. The command requires that the user chooses how to handle existing data.
-
- .Parameter Verbose
-  Enables extended output
-  Applies to all functions
-
- .Parameter Destination 
-  (optional)
-  Location in which to save the backup ZIP and REG files
-  Defaults to the users OneDrive
-  Applies to the Backup-EDGEProfiles function
-
- .Parameter AddDate
-  (optional - $true/$false)
-  Applies a date stamp to the filenames.
-  Defaults to $true
-  Applies to the Backup-EDGEProfiles function
-
- .Parameter ZIPSource
-  (Mandatory - file path)
-  Location of the User Data backup archive file.  
-  Applies to the Restore-EDGEProfiles function
-
- .Parameter REGSource
-  (Mandatory - file path)
-  Location of the profile data registry file.
-  Applies to the Restore-EDGEProfiles function
-
- .Parameter ExistingDataAction
-  (Mandatory - Rename/Remove)
-  Choose weather to have the existing User Data removed completely or just renamed. Renaming will add a datestamp to the existing USer Data folder.
-  Applies to the Restore-EDGEProfiles function
 
  .Example
    # Backup the current users EDGE Profiles to the _EdgeProfilesBackup folder in the users own OneDrive.
@@ -64,8 +34,35 @@
 #Requires -Version 5
 
 function Backup-EDGEProfiles {
+<#
+ .Synopsis
+  Backup current users Microsoft EDGE (Anaheim) Profiles.
 
-    #Add the -verbose parameter to commandline to get extra output.
+ .Description
+  Will backup all EDGE "User Data" for the current user. 
+
+ .Parameter Verbose
+  Enables extended output
+
+ .Parameter Destination 
+  (optional)
+  Location in which to save the backup ZIP and REG files
+  Defaults to the users OneDrive
+
+ .Parameter AddDate
+  (optional - $true/$false)
+  Applies a date stamp to the filenames.
+  Defaults to $true
+
+ .Example
+   # Backup the current users EDGE Profiles to the _EdgeProfilesBackup folder in the users own OneDrive.
+   Backup-EDGEProfiles
+
+ .Example
+   # Backup the current users EDGE Profiles to the users own TEMP folder.
+   Backup-EDGEProfiles -Destination $env:TEMP
+#>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory=$false,
@@ -118,13 +115,14 @@ function Backup-EDGEProfiles {
         Remove-Item $regBackupDestination -Force -ErrorAction SilentlyContinue
     }
     $regCMD = Invoke-Command {reg export "$edgeProfilesRegistry" "$regBackupDestination"}
+    $regCMD = ""
 
     #Export user data
 
     #Cleaning cache
     Write-Verbose "Cleaning up cache before export."
     if(Test-Path $edgeProfilesPath){
-        $cacheFolders = Get-ChildItem -Path $edgeProfilesPath -r  | ? { $_.PsIsContainer -and $_.Name -eq "Cache" }
+        $cacheFolders = Get-ChildItem -Path $edgeProfilesPath -r  | Where-Object { $_.PsIsContainer -and $_.Name -eq "Cache" }
         Foreach ($folder in $cacheFolders)
         {
             $rmPath = Join-Path -Path $folder.fullname -ChildPath "\*"
@@ -160,6 +158,32 @@ function Backup-EDGEProfiles {
 }
 
 function Restore-EDGEProfiles {
+<#
+ .Synopsis
+  Restore Microsoft EDGE (Anaheim) Profiles to the current users EDGE Browser.
+
+ .Description
+  Will restore all EDGE "User Data" for the current user from an archive created by the Backup-EDGEProfiles function. 
+
+ .Parameter Verbose
+  Enables extended output
+
+ .Parameter ZIPSource
+  (Mandatory - file path)
+  Location of the User Data backup archive file.  
+
+ .Parameter REGSource
+  (Mandatory - file path)
+  Location of the profile data registry file.
+
+ .Parameter ExistingDataAction
+  (Mandatory - Rename/Remove)
+  Choose wheather to have the existing User Data removed completely or just renamed. Renaming will add a datestamp to the existing USer Data folder.
+
+ .Example
+   # Restore a previous backup and remove existing user data.
+   Restore-EDGEProfiles -ZIPSource EDGE-UserData30July2021-MichaelMardahl.zip -REGSource EDGE-ProfilesRegistry30July2021-MichaelMardahl.reg -ExistingDataAction Remove
+#>
 
     #Add the -verbose parameter to commandline to get extra output.
     [CmdletBinding()]
