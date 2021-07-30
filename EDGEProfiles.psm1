@@ -29,7 +29,7 @@
         Updated:     2021-30-07
         Version history:
         1.0.0 - (2021-30-07) Script created
-  
+
 #>
 #Requires -Version 5
 
@@ -39,12 +39,12 @@ function Backup-EDGEProfiles {
   Backup current users Microsoft EDGE (Anaheim) Profiles.
 
  .Description
-  Will backup all EDGE "User Data" for the current user. 
+  Will backup all EDGE "User Data" for the current user.
 
  .Parameter Verbose
   Enables extended output
 
- .Parameter Destination 
+ .Parameter Destination
   (optional)
   Location in which to save the backup ZIP and REG files
   Defaults to the users OneDrive
@@ -70,7 +70,7 @@ function Backup-EDGEProfiles {
         [string]$Destination = (Join-Path -Path $env:OneDrive -ChildPath "\_EdgeProfilesBackup"),
         [Parameter(Mandatory=$false,
                     HelpMessage="Append the current date to the backup (Defaults to true)")]
-        [bool]$AddDate = $true     
+        [bool]$AddDate = $true
     )
 
     #region Execute
@@ -87,7 +87,7 @@ function Backup-EDGEProfiles {
         exit 1
     }
 
-    Write-Host "Starting EDGE profiles backup for $($env:USERNAME) to ($Destination) - DON'T OPEN EDGE! and please wait..."
+    Write-Information "Starting EDGE profiles backup for $($env:USERNAME) to ($Destination) - DON'T OPEN EDGE! and please wait..."
     Write-Verbose "Destination root   : $Destination"
     Write-Verbose "Append date        : $AddDate"
 
@@ -115,7 +115,7 @@ function Backup-EDGEProfiles {
         Remove-Item $regBackupDestination -Force -ErrorAction SilentlyContinue
     }
     $regCMD = Invoke-Command {reg export "$edgeProfilesRegistry" "$regBackupDestination"}
-    $regCMD = ""
+    Write-Verbose $regCMD
 
     #Export user data
 
@@ -145,7 +145,7 @@ function Backup-EDGEProfiles {
     #Compressing data to backup location
     try {
         Get-ChildItem -Path $edgeProfilesPath | Compress-Archive -DestinationPath $zipBackupDestination -CompressionLevel Fastest
-        Write-Host "EDGE Profile export completed to: $Destination"
+        Write-Information "EDGE Profile export completed to: $Destination"
     } catch {
         #Error out and cleanup
         Write-Error $_
@@ -163,14 +163,14 @@ function Restore-EDGEProfiles {
   Restore Microsoft EDGE (Anaheim) Profiles to the current users EDGE Browser.
 
  .Description
-  Will restore all EDGE "User Data" for the current user from an archive created by the Backup-EDGEProfiles function. 
+  Will restore all EDGE "User Data" for the current user from an archive created by the Backup-EDGEProfiles function.
 
  .Parameter Verbose
   Enables extended output
 
  .Parameter ZIPSource
   (Mandatory - file path)
-  Location of the User Data backup archive file.  
+  Location of the User Data backup archive file.
 
  .Parameter REGSource
   (Mandatory - file path)
@@ -197,7 +197,7 @@ function Restore-EDGEProfiles {
         [Parameter(Mandatory=$true,
                     HelpMessage="How to handle the existing profiles? Options are Backup or Remove")]
         [ValidateSet('Rename','Remove')]
-        [string]$ExistingDataAction    
+        [string]$ExistingDataAction
     )
 
     #region Execute
@@ -218,7 +218,7 @@ function Restore-EDGEProfiles {
         exit 1
     }
 
-    Write-Host "Starting EDGE profiles restore for $($env:USERNAME) - (DON'T OPEN EDGE!) please wait..."
+    Write-Information "Starting EDGE profiles restore for $($env:USERNAME) - (DON'T OPEN EDGE!) please wait..."
     Write-Verbose "Source archive   : $ZIPSource"
     Write-Verbose "Source registry  : $REGSource"
 
@@ -249,7 +249,7 @@ function Restore-EDGEProfiles {
     Write-Verbose "Decompressing '$ZIPSource' to $edgeProfilesPath"
     try {
         Expand-Archive -Path $ZIPSource -DestinationPath $edgeProfilesPath -Force
-        Write-Host "EDGE Profile import completed to: $UserData"
+        Write-Information "EDGE Profile import completed to: $UserData"
     } catch {
         #Error out and cleanup
         Write-Error $_
