@@ -26,9 +26,11 @@
         Author:      Michael Mardahl
         Contact:     @michael_mardahl
         Created:     2021-30-07
-        Updated:     2021-30-07
+        Updated:     2021-31-07
         Version history:
         1.0.0 - (2021-30-07) Script created
+        1.0.1 - (2021-31-07) Minor output fixes
+        1.0.2 - (2021-01-08) Changed from exit codes to breaks
 
 #>
 #Requires -Version 5
@@ -83,11 +85,11 @@ function Backup-EDGEProfiles {
 
     #Verify EDGE is closed
     if (Get-Process msedge -ErrorAction SilentlyContinue) {
-        Write-Warning "EDGE is still running, please close any open EDGE Browsers and try again."
-        exit 1
+        Write-Error "EDGE is still running, please close any open EDGE Browsers and try again."
+        break
     }
 
-    Write-Information "Starting EDGE profiles backup for $($env:USERNAME) to ($Destination) - DON'T OPEN EDGE! and please wait..."
+    Write-Output "Starting EDGE profiles backup for $($env:USERNAME) to ($Destination) - DON'T OPEN EDGE! and please wait..."
     Write-Verbose "Destination root   : $Destination"
     Write-Verbose "Append date        : $AddDate"
 
@@ -115,7 +117,6 @@ function Backup-EDGEProfiles {
         Remove-Item $regBackupDestination -Force -ErrorAction SilentlyContinue
     }
     $regCMD = Invoke-Command {reg export "$edgeProfilesRegistry" "$regBackupDestination"}
-    Write-Verbose $regCMD
 
     #Export user data
 
@@ -132,7 +133,7 @@ function Backup-EDGEProfiles {
         Write-Verbose "Cleanup completed."
     } else {
         Write-Error "EDGE user data folder missing - terminating!"
-        Exit 1
+        break
     }
 
     #Creating ZIP Archive
@@ -145,14 +146,14 @@ function Backup-EDGEProfiles {
     #Compressing data to backup location
     try {
         Get-ChildItem -Path $edgeProfilesPath | Compress-Archive -DestinationPath $zipBackupDestination -CompressionLevel Fastest
-        Write-Information "EDGE Profile export completed to: $Destination"
+        Write-Output "EDGE Profile export completed to: $Destination"
     } catch {
         #Error out and cleanup
         Write-Error $_
         Remove-Item $zipBackupDestination -Force -ErrorAction SilentlyContinue
         Remove-Item $regBackupDestination -Force -ErrorAction SilentlyContinue
         Write-Error "EDGE Backup failed, did you forget to keep EDGE closed?!"
-        exit 1
+        break
     }
     #endregion Execute
 }
@@ -204,21 +205,21 @@ function Restore-EDGEProfiles {
 
     #Verify that the entered sources exits and have the right fileextention
     if(-not ((Test-Path $ZIPSource) -or (-not ($ZIPSource -ilike "*.zip")))){
-        Write-Warning "The entered source file could not be validated ($ZIPSource)"
-        exit 1
+        Write-Error "The entered source file could not be validated ($ZIPSource)"
+        break
     }
     if(-not ((Test-Path $REGSource) -or (-not ($REGSource -ilike "*.reg")))){
-        Write-Warning "The entered source file could not be validated ($REGSource)"
-        exit 1
+        Write-Error "The entered source file could not be validated ($REGSource)"
+        break
     }
 
     #Verify EDGE is closed
     if (Get-Process msedge -ErrorAction SilentlyContinue) {
-        Write-Warning "EDGE is still running, please close any open EDGE Browsers and try again."
-        exit 1
+        Write-Error "EDGE is still running, please close any open EDGE Browsers and try again."
+        Break
     }
 
-    Write-Information "Starting EDGE profiles restore for $($env:USERNAME) - (DON'T OPEN EDGE!) please wait..."
+    Write-Output "Starting EDGE profiles restore for $($env:USERNAME) - (DON'T OPEN EDGE!) please wait..."
     Write-Verbose "Source archive   : $ZIPSource"
     Write-Verbose "Source registry  : $REGSource"
 
@@ -249,14 +250,14 @@ function Restore-EDGEProfiles {
     Write-Verbose "Decompressing '$ZIPSource' to $edgeProfilesPath"
     try {
         Expand-Archive -Path $ZIPSource -DestinationPath $edgeProfilesPath -Force
-        Write-Information "EDGE Profile import completed to: $UserData"
+        Write-Output "EDGE Profile import completed to: $UserData"
     } catch {
         #Error out and cleanup
         Write-Error $_
         Remove-Item $zipBackupDestination -Force -ErrorAction SilentlyContinue
         Remove-Item $regBackupDestination -Force -ErrorAction SilentlyContinue
         Write-Error "EDGE import failed, did you forget to keep EDGE closed?!"
-        exit 1
+        break
     }
     #endregion Execute
 }
