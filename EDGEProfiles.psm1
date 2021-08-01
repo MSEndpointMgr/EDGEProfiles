@@ -31,6 +31,7 @@
         1.0.0 - (2021-30-07) Script created
         1.0.1 - (2021-31-07) Minor output fixes
         1.0.2 - (2021-01-08) Changed from exit codes to breaks
+        1.0.3 - (2021-01-08) Changed from exit codes to breaks
 
 #>
 #Requires -Version 5
@@ -80,7 +81,7 @@ function Backup-EDGEProfiles {
     #Verify that the entered destination exists
     if(-not (Test-Path $Destination)){
         Write-Warning "The entered destination path could not be validated ($Destination)"
-        exit 1
+        break
     }
 
     #Verify EDGE is closed
