@@ -17,14 +17,17 @@ PowerShell module to handle backup and restore of EDGE browser profiles for the 
  **.Example**
  
    Backup the current users EDGE Profiles to the \_EdgeProfilesBackup folder in the users own OneDrive.
+   
    *Backup-EDGEProfiles*
 
  **.Example**
  
    Backup the current users EDGE Profiles to the users own TEMP folder.
+   
    *Backup-EDGEProfiles -Destination $env:TEMP*
 
  **.Example**
  
    Restore a previous backup and remove existing user data.
+   
    *Restore-EDGEProfiles -ZIPSource EDGE-UserData30July2021-MichaelMardahl.zip -REGSource EDGE-ProfilesRegistry30July2021-MichaelMardahl.reg -ExistingDataAction Remove*
