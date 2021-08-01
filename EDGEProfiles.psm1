@@ -32,6 +32,7 @@
         1.0.1 - (2021-31-07) Minor output fixes
         1.0.2 - (2021-01-08) Changed from exit codes to breaks
         1.0.3 - (2021-01-08) Changed from exit codes to breaks
+        1.0.4 - (2021-01-08) Default destination validation bug fix (Thanks @byteben)
 
 #>
 #Requires -Version 5
@@ -79,7 +80,11 @@ function Backup-EDGEProfiles {
     #region Execute
 
     #Verify that the entered destination exists
-    if(-not (Test-Path $Destination)){
+    if ((-not (Test-Path $Destination) -and ($Destination -eq (Join-Path -Path $env:OneDrive -ChildPath "\_EdgeProfilesBackup")))){
+        #Create default destination
+        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+    }
+    elseif (-not (Test-Path $Destination)){
         Write-Warning "The entered destination path could not be validated ($Destination)"
         break
     }
@@ -104,11 +109,6 @@ function Backup-EDGEProfiles {
     #Setting some important variables
     $edgeProfilesPath = (Join-Path -Path $env:LOCALAPPDATA -ChildPath "\Microsoft\Edge")
     $edgeProfilesRegistry = "HKCU\Software\Microsoft\Edge\PreferenceMACs"
-
-    #Validate destination exists
-    if (-not (Test-Path $Destination)){
-        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
-    }
 
     #Export registry key
     $regBackupDestination = (Join-Path -Path $Destination -ChildPath "\EDGE-ProfilesRegistry$($dateName)-$($env:USERNAME).reg")
