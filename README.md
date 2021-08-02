@@ -1,13 +1,13 @@
 # EDGEProfiles
 PowerShell module to handle backup and restore of EDGE browser profiles for the current user.
 
-#Installation
+# Installation
 Install-Module EDGEProfiles
 
-#Works/tested on
-Windows 10 20H2 and newer
-Windows 11 Preview and newer
-All EDGE Chromium versions should theoretically be supported.
+# Works/tested on
+- Windows 10 20H2 and newer
+- Windows 11 Preview and newer
+- All EDGE Chromium versions should theoretically be supported.
 
 #Help
 
