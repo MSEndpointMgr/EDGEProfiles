@@ -1,43 +1,43 @@
-# EDGEProfiles
-PowerShell module to handle backup and restore of EDGE browser profiles for the current user.
+# EdgeProfiles
+PowerShell module to handle backup and restore of Edge browser profiles for the current user.
 
 ## Installation
-Install-Module EDGEProfiles
+Install-Module EdgeProfiles
 
 ## Works/tested on
 - Windows 10 20H2 and newer
 - Windows 11 Preview and newer
-- All EDGE Chromium versions should theoretically be supported.
+- All Edge Chromium versions should theoretically be supported.
 
 # Help
 
 **.Synopsis**
 
-  Allows for easy backup and restore of Microsoft EDGE (Anaheim) Profiles.
+  Allows for easy backup and restore of Microsoft Edge (Anaheim) Profiles.
   EDGE MUST BE CLOSED DURING!
 
 **.Description**
 
-  Will backup all EDGE "User Data" for the current user. This data contains all the "Profiles" within the browser, and the corresponding registry keys will also be saved alongside the backup.
+  Will backup all Edge "User Data" for the current user. This data contains all the "Profiles" within the browser, and the corresponding registry keys will also be saved alongside the backup.
   Backups are zipped to allow for easy storage on locations like OneDrive.
   Before archiving the backup, all profiles have their Cache emptied.
 
-  Restore will replace the current users EDGE data. The command requires that the user chooses how to handle existing data.
+  Restore will replace the current users Edge data. The command requires that the user chooses how to handle existing data.
 
  **.Example**
  
-   Backup the current users EDGE Profiles to the \_EdgeProfilesBackup folder in the users own OneDrive.
+   Backup the current users Edge Profiles to the \_EdgeProfilesBackup folder in the users own OneDrive.
    
-   *Backup-EDGEProfiles*
+   *Backup-EdgeProfiles*
 
  **.Example**
  
-   Backup the current users EDGE Profiles to the users own TEMP folder.
+   Backup the current users Edge Profiles to the users own TEMP folder.
    
-   *Backup-EDGEProfiles -Destination $env:TEMP*
+   *Backup-EdgeProfiles -Destination $env:TEMP*
 
  **.Example**
  
    Restore a previous backup and remove existing user data.
    
-   *Restore-EDGEProfiles -ZIPSource EDGE-UserData30July2021-MichaelMardahl.zip -REGSource EDGE-ProfilesRegistry30July2021-MichaelMardahl.reg -ExistingDataAction Remove*
+   *Restore-EdgeProfiles -ZIPSource Edge-UserData30July2021-MichaelMardahl.zip -REGSource Edge-ProfilesRegistry30July2021-MichaelMardahl.reg -ExistingDataAction Remove*

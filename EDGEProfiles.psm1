@@ -33,11 +33,11 @@
         1.0.2 - (2021-01-08) Changed from exit codes to breaks
         1.0.3 - (2021-01-08) Changed from exit codes to breaks
         1.0.4 - (2021-01-08) Default destination validation bug fix (Thanks @byteben)
-        1.0.5 - (2022-17-11) 
-                             Move functions to separate file
+        1.0.5 - (2022-17-11) Move functions to separate file
                              Rename module and functions from "Edge" to "Edge"
-                             Removove cache cleaning and added parameter "FoldersToExclude"
-
+                             Change cache clean to function so multiple folders can be emptied before backup
+                             Added support to close edge forcefully
+                             Added support to backup multiple channels
 #>
 [CmdletBinding()]
 Param()
