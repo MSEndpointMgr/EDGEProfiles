@@ -92,7 +92,8 @@ function Backup-EdgeProfiles {
         }
         #Compressing data to backup location
         try {
-            Get-ChildItem -Path $EdgeProfilesPath -r | Where-Object { $_.PsIsContainer -and $_.Name -notin $FoldersToExclude} | Compress-Archive -DestinationPath $zipBackupDestination -CompressionLevel Fastest
+            $files = Get-ChildItem -Path $EdgeProfilesPath -r | Where-Object { $_.PsIsContainer -and $_.Name -notin $FoldersToExclude} 
+            Compress-Archive $files -DestinationPath $zipBackupDestination -CompressionLevel Fastest
             Write-Output "Edge Profile export completed to: $Destination"
         } catch {
             #Error out and cleanup
