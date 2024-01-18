@@ -22,7 +22,9 @@ Install-Module EdgeProfiles
   Backups are zipped to allow for easy storage on locations like OneDrive.
   Before archiving the backup, all profiles have their Cache emptied.
 
-  Restore will replace the current users Edge data. The command requires that the user chooses how to handle existing data.
+  Restore will replace the current users Edge data. The command requires that the user choose how to handle existing data.
+
+  NB: Authentication tokens can't be exported, so users will have to sign-in again to services using modern authentication.
 
  **.Example**
  
